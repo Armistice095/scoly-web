@@ -1,0 +1,38 @@
+# Dépendances
+node_modules/
+
+# SvelteKit / Vite (générés)
+.svelte-kit/
+build/
+.output/
+.vercel/
+.netlify/
+.wrangler/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Variables d'environnement : jamais commitées (voir .env.example)
+.env
+.env.*
+!.env.example
+!.env.test
+!.env.production
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Caches d'outils
+.eslintcache
+.prettiercache
+*.tsbuildinfo
+coverage/
+
+# Système et éditeurs (.vscode/ est volontairement versionné : extensions et réglages partagés)
+.DS_Store
+Thumbs.db
+.idea/
+*.swp

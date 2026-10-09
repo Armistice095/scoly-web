@@ -1,0 +1,409 @@
+/*
+ * Page publique de vérification d'un document.
+ * Reprend la maquette ; toutes les classes sont préfixées `v-` car `.card` et `.note`
+ * existent déjà dans design-system.css avec un autre sens (écran de connexion).
+ * Les tokens (couleurs, espacements, rayons, durées) viennent du design system.
+ */
+
+/* ---------- En-tête public ---------- */
+.v-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--s4);
+	padding: var(--s4) var(--s5);
+	padding-top: calc(var(--s4) + env(safe-area-inset-top, 0px));
+	border-bottom: 1px solid var(--line);
+	background: var(--bg);
+}
+.v-brand {
+	display: inline-flex;
+	border-radius: var(--r-sm);
+}
+.v-head-r {
+	display: flex;
+	align-items: center;
+	gap: var(--s3);
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	font-size: 14px;
+	color: var(--ink-3);
+}
+.v-lnk {
+	border: 0;
+	background: none;
+	padding: 10px 0; /* zone d'appui confortable au pouce */
+	font: inherit;
+	font-size: 14px;
+	color: var(--ink-3);
+	cursor: pointer;
+	transition: color var(--dur-1) var(--ease-out);
+}
+.v-lnk:hover {
+	color: var(--ink);
+	text-decoration: underline;
+}
+.v-lnk:focus-visible {
+	outline: 2px solid var(--focus);
+	outline-offset: 3px;
+	border-radius: var(--r-sm);
+}
+.v-lnk + .v-head-titre {
+	padding-left: var(--s3);
+	border-left: 1px solid var(--ink-3);
+}
+
+/* ---------- Colonne centrale ---------- */
+.v-main {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: var(--s6) var(--s4) var(--s7);
+	padding-bottom: calc(var(--s7) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- Carte de résultat ---------- */
+.v-carte {
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-1);
+	overflow: hidden;
+	animation: v-entree var(--dur-3) var(--ease-out) both;
+}
+.v-top {
+	padding: var(--s6) var(--s5) var(--s5);
+	text-align: center;
+}
+.v-ic {
+	width: 72px;
+	height: 72px;
+	margin: 0 auto var(--s4);
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	animation: v-pop 420ms var(--ease-out) 80ms both;
+}
+.v-ic svg.i {
+	width: 36px;
+	height: 36px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.75;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+.v-in .v-ic {
+	background: var(--accent-soft);
+	color: var(--accent);
+}
+.v-ok .v-ic {
+	background: var(--ok-soft);
+	color: var(--ok);
+}
+.v-err .v-ic,
+.v-unk .v-ic {
+	background: var(--sunken);
+	color: var(--err);
+}
+.v-top h1 {
+	font: 400 30px/1.15 var(--font-serif);
+	letter-spacing: -0.01em;
+	margin: 0 0 var(--s2);
+}
+.v-top h1:focus {
+	outline: none; /* le focus programmatique n'a pas à dessiner un cadre autour du titre */
+}
+.v-ok h1 {
+	color: var(--ok);
+}
+.v-err h1,
+.v-unk h1 {
+	color: var(--err);
+}
+.v-top p {
+	margin: 0 auto;
+	max-width: 440px;
+	color: var(--ink-2);
+}
+
+/* ---------- Blocs de détail ---------- */
+.v-det {
+	padding: var(--s5);
+	border-top: 1px solid var(--line);
+}
+.v-det h2 {
+	font: 500 17px var(--font-serif);
+	margin: 0 0 var(--s3);
+}
+.v-dl {
+	display: grid;
+	grid-template-columns: 150px 1fr;
+	gap: 10px var(--s3);
+	margin: 0;
+	font-size: 14.5px;
+}
+.v-dl dt {
+	color: var(--ink-3);
+}
+.v-dl dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+/* Pastille de statut : le mot est écrit, la couleur n'est qu'un renfort. */
+.badge.v-b-ok {
+	background: var(--ok-soft);
+	color: var(--ok);
+}
+.badge.v-b-err {
+	background: var(--sunken);
+	color: var(--err);
+}
+
+/* ---------- Mention « Vérification effectuée le … » ---------- */
+.v-note {
+	display: flex;
+	gap: var(--s3);
+	padding: var(--s4) var(--s5);
+	border-top: 1px solid var(--line);
+	background: var(--bg);
+	font-size: 13.5px;
+	color: var(--ink-2);
+}
+.v-note svg.i {
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: var(--ink-3);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	flex: none;
+	margin-top: 1px;
+}
+.v-note p {
+	margin: 0;
+}
+
+/* ---------- « Un doute ? / Que faire ? » ---------- */
+.v-aide {
+	margin-top: var(--s5);
+	padding: var(--s5);
+	border: 1px solid var(--line);
+	border-radius: var(--r-lg);
+	background: var(--surface);
+	animation: v-entree var(--dur-3) var(--ease-out) 90ms both;
+}
+.v-aide h2 {
+	font: 500 17px var(--font-serif);
+	margin: 0 0 var(--s2);
+}
+.v-aide p {
+	margin: 0 0 var(--s3);
+	color: var(--ink-2);
+	font-size: 14.5px;
+}
+.v-aide ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 14.5px;
+	display: grid;
+	gap: 6px;
+}
+.v-aide a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 32px;
+	color: var(--brand-2);
+	text-decoration: none;
+	font-weight: 500;
+	overflow-wrap: anywhere;
+}
+.v-aide a:hover {
+	text-decoration: underline;
+}
+
+/* ---------- Formulaires (saisie de la référence, nom de l'établissement) ---------- */
+.v-form {
+	padding: var(--s5);
+	border-top: 1px solid var(--line);
+}
+.v-form label {
+	display: block;
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 6px;
+}
+.v-fld {
+	width: 100%;
+	height: 46px;
+	padding: 0 var(--s3);
+	border: 1px solid var(--line);
+	border-radius: var(--r-md);
+	background: var(--bg);
+	color: var(--ink);
+	transition:
+		border-color var(--dur-1) var(--ease-out),
+		box-shadow var(--dur-1) var(--ease-out);
+}
+.v-fld:focus {
+	border-color: var(--brand-2);
+}
+.v-fld[aria-invalid='true'] {
+	border-color: var(--err);
+}
+.v-fld[aria-invalid='true'].v-secoue {
+	animation: v-secoue 0.32s var(--ease-out);
+}
+.v-fld:disabled {
+	opacity: 0.7;
+}
+.v-msg-err {
+	margin: 6px 0 0;
+	color: var(--err);
+	font-size: 13.5px;
+}
+.v-msg-err:empty {
+	display: none;
+}
+.v-aide-champ {
+	margin: 6px 0 var(--s4);
+	color: var(--ink-3);
+	font-size: 13.5px;
+}
+.v-msg-err:not(:empty) + .v-aide-champ {
+	margin-top: 4px;
+}
+.v-form .btn {
+	width: 100%;
+	height: 46px;
+}
+.v-form .btn:disabled {
+	cursor: not-allowed;
+}
+.v-form .banner {
+	margin: 0 0 var(--s4);
+}
+.v-actions {
+	display: grid;
+	gap: var(--s3);
+}
+
+/* ---------- Pied de carte « scanner le QR » ---------- */
+.v-qr {
+	display: flex;
+	gap: var(--s3);
+	padding: var(--s4) var(--s5);
+	border-top: 1px solid var(--line);
+	background: var(--bg);
+	font-size: 13.5px;
+	color: var(--ink-2);
+}
+.v-qr svg.i {
+	width: 20px;
+	height: 20px;
+	fill: none;
+	stroke: var(--ink-3);
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	flex: none;
+	margin-top: 1px;
+}
+.v-qr p {
+	margin: 0;
+}
+
+/* ---------- Chargement ---------- */
+.v-chargement {
+	display: grid;
+	justify-items: center;
+	gap: var(--s4);
+	padding: var(--s7) var(--s5);
+	text-align: center;
+	color: var(--ink-2);
+}
+.v-chargement .spinner {
+	width: 32px;
+	height: 32px;
+	border-width: 3px;
+}
+.v-chargement p {
+	margin: 0;
+}
+
+.v-pied {
+	margin-top: var(--s5);
+	text-align: center;
+	font-size: 13px;
+	color: var(--ink-3);
+}
+
+/* ---------- Mouvement ---------- */
+@keyframes v-entree {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+}
+@keyframes v-pop {
+	0% {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+	60% {
+		transform: scale(1.06);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+@keyframes v-secoue {
+	20%,
+	60% {
+		transform: translateX(-4px);
+	}
+	40%,
+	80% {
+		transform: translateX(4px);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.v-carte,
+	.v-aide,
+	.v-ic,
+	.v-fld[aria-invalid='true'].v-secoue {
+		animation: none;
+	}
+}
+
+/* ---------- Mobile : page surtout ouverte après un scan de QR ---------- */
+@media (max-width: 520px) {
+	.v-head {
+		padding-inline: var(--s4);
+	}
+	.v-head-titre {
+		display: none;
+	}
+	.v-lnk + .v-head-titre {
+		border-left: 0;
+		padding-left: 0;
+	}
+	.v-main {
+		padding-top: var(--s5);
+	}
+	.v-dl {
+		grid-template-columns: 1fr;
+		gap: 2px;
+	}
+	.v-dl dd {
+		margin-bottom: var(--s3);
+	}
+	.v-top h1 {
+		font-size: 26px;
+	}
+	.v-top {
+		padding-inline: var(--s4);
+	}
+}
