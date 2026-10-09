@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import ProfilFormulaire from '$lib/components/compte/ProfilFormulaire.svelte';
 	import { session } from '$lib/stores/session.svelte';
 
@@ -7,7 +8,7 @@
 	const libelleRole = $derived(utilisateur?.role === 'DIRECTEUR' ? 'Directeur' : 'Membre');
 </script>
 
-<svelte:head><title>Mon profil – Scoly</title></svelte:head>
+<Seo titre="Mon profil" noindex />
 
 <h1>Mon profil</h1>
 

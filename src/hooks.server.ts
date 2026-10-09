@@ -14,5 +14,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
 	response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 	response.headers.set('Strict-Transport-Security', 'max-age=31536000');
+
+	// Espace connecté, invitations et vérifications : jamais indexés, même si un lien fuite.
+	const routeId = event.route.id ?? '';
+	if (
+		routeId.startsWith('/(app)') ||
+		routeId.startsWith('/verifier') ||
+		routeId.startsWith('/invitation')
+	) {
+		response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+	}
 	return response;
 };

@@ -1,3 +1,7 @@
-# allow crawling everything by default
 User-agent: *
-Disallow:
+Allow: /
+# Pages privées ou à usage unique : jamais utiles dans un moteur de recherche.
+Disallow: /verifier/
+Disallow: /invitation
+
+Sitemap: https://app.scoly.ink/sitemap.xml

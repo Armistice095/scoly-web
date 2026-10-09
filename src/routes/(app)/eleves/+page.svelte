@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -240,9 +241,7 @@
 	const premierChargement = $derived(chargement && donnees === null);
 </script>
 
-<svelte:head>
-	<title>Élèves · Scoly</title>
-</svelte:head>
+<Seo titre="Élèves" noindex />
 
 <div class="head">
 	<p class="count" aria-live="polite">

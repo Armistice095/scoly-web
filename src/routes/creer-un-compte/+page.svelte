@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import Logo from '$lib/components/Logo.svelte';
@@ -190,6 +191,11 @@
 		await authApi.renvoyerActivation(email);
 	}
 </script>
+
+<Seo
+	titre="Créer un compte"
+	description="Créez le compte de votre établissement sur Scoly et dématérialisez vos documents administratifs scolaires."
+/>
 
 <div class="page-connexion">
 	<Logo height={62} />

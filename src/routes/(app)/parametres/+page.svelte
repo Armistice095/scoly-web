@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -489,6 +490,8 @@
 		}
 	}
 </script>
+
+<Seo titre="Paramètres" noindex />
 
 {#snippet champFichier(type: TypeImageEtablissement, id: string, url: string | null | undefined)}
 	<div class="file">

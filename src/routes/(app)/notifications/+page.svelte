@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import NotificationLigne from '$lib/components/notifications/NotificationLigne.svelte';
 	import Skeleton from '$lib/components/skeleton/Skeleton.svelte';
@@ -88,7 +89,7 @@
 	const libelleGroupe = (g: GroupeNotification) => GROUPES.find((x) => x.valeur === g)?.libelle;
 </script>
 
-<svelte:head><title>Centre de notifications – Scoly</title></svelte:head>
+<Seo titre="Centre de notifications" noindex />
 
 <div class="nc-head">
 	<div>

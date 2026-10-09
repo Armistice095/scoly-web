@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import Logo from '$lib/components/Logo.svelte';
@@ -12,9 +13,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Scoly – Conditions d’utilisation</title>
-</svelte:head>
+<Seo
+	titre="Conditions d’utilisation"
+	description="Conditions générales d’utilisation de la plateforme Scoly."
+/>
 
 <header class="dtop">
 	<div class="dtop-in">

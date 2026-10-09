@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onDestroy, onMount, tick, untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -372,9 +373,7 @@
 	const progression = $derived(vue === 'etape2' ? 100 : 50);
 </script>
 
-<svelte:head>
-	<title>Documents · Scoly</title>
-</svelte:head>
+<Seo titre="Documents" noindex />
 
 {#if vue === 'liste'}
 	<div in:glisser={{ x: sens * 16 }}>

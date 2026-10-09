@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import Logo from '$lib/components/Logo.svelte';
@@ -12,9 +13,10 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Scoly – Politique de confidentialité</title>
-</svelte:head>
+<Seo
+	titre="Politique de confidentialité"
+	description="Comment Scoly collecte, utilise et protège les données de votre établissement et de ses élèves."
+/>
 
 <header class="dtop">
 	<div class="dtop-in">

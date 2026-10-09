@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount, tick, untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -428,9 +429,7 @@
 	const premierChargement = $derived(chargement && donnees === null);
 </script>
 
-<svelte:head>
-	<title>Archives · Scoly</title>
-</svelte:head>
+<Seo titre="Archives" noindex />
 
 <ArchiveFiltres
 	bind:this={filtres}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
@@ -177,6 +178,11 @@
 		resetToken = null;
 	}
 </script>
+
+<Seo
+	titre="Connexion"
+	description="Connectez-vous à Scoly pour établir, archiver et vérifier les documents administratifs de votre établissement scolaire."
+/>
 
 {#if !chargementInitial}
 	<div class="page-connexion">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
@@ -14,6 +15,12 @@
 		if (vide) void goto(resolve('/verifier'), { replaceState: true });
 	});
 </script>
+
+<Seo
+	titre="Vérification d’un document"
+	description="Vérifiez l’authenticité d’un document délivré par un établissement scolaire via Scoly."
+	noindex
+/>
 
 {#if !vide}
 	<!-- Parcours QR : vérification automatique au chargement, jamais d'AMBIGU. -->

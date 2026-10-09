@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -95,9 +96,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Scoly – Rejoindre un établissement</title>
-</svelte:head>
+<Seo titre="Rejoindre un établissement" noindex />
 
 <div class="page-connexion">
 	<Logo height={62} />
