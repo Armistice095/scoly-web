@@ -2,8 +2,10 @@ import { api } from './client';
 import type {
 	AnneeScolaire,
 	AnneeScolairePayload,
+	EnteteParDefaut,
 	Etablissement,
 	EtablissementUpdatePayload,
+	OrdreEnseignement,
 	TypeImageEtablissement
 } from '$lib/types';
 
@@ -25,6 +27,13 @@ export const etablissementApi = {
 	// §3 — 🔒 Directeur
 	televerserImage: (token: string, type: TypeImageEtablissement, fichier: File) =>
 		api.upload<Etablissement>(`/etablissement/images/${type}`, fichier, { token }),
+
+	// §5.1 — aperçu de l'en-tête officiel, sans rien enregistrer
+	enteteParDefaut: (token: string, ordreEnseignement: OrdreEnseignement, departement: string) =>
+		api.get<EnteteParDefaut>(
+			`/etablissement/entete-par-defaut?${new URLSearchParams({ ordreEnseignement, departement })}`,
+			{ token }
+		),
 
 	// §4.1
 	listerAnneesScolaires: (token: string) =>

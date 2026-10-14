@@ -58,6 +58,16 @@ export interface EtablissementUpdatePayload {
 	lieuParDefaut?: string;
 }
 
+/** Réponse de `GET /etablissement/entete-par-defaut` (voir API_ETABLISSEMENT.md §5). */
+export interface EnteteParDefaut {
+	/** `null` si l'ordre ou le département n'est pas reconnu. */
+	ministereTutelle: string | null;
+	directionDepartementale: string | null;
+	devise: string;
+}
+
+export type ChampEntete = 'ministereTutelle' | 'directionDepartementale' | 'devise';
+
 export type TypeImageEtablissement = 'logo' | 'signature' | 'cachet';
 
 export interface AnneeScolairePayload {

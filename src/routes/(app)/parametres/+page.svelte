@@ -18,9 +18,12 @@
 	import { DEPARTEMENTS, COMMUNES_PAR_DEPARTEMENT } from '$lib/constants/geo';
 	import type {
 		AnneeScolaire,
+		ChampEntete,
+		EnteteParDefaut,
 		Etablissement,
 		EtablissementUpdatePayload,
 		MembreEquipe,
+		OrdreEnseignement,
 		StatutMembreEquipe,
 		TypeImageEtablissement
 	} from '$lib/types';
@@ -80,6 +83,20 @@
 	const communesDisponibles = $derived(
 		brouillon.departement ? (COMMUNES_PAR_DEPARTEMENT[brouillon.departement] ?? []) : []
 	);
+
+	// --- En-tête automatique (valeurs calculées par l'API, jamais côté front) ---
+	const CHAMPS_ENTETE: ChampEntete[] = ['ministereTutelle', 'directionDepartementale', 'devise'];
+	const LIBELLE_CHAMP_ENTETE: Record<ChampEntete, string> = {
+		ministereTutelle: 'le ministère de tutelle',
+		directionDepartementale: 'la direction départementale',
+		devise: 'la devise'
+	};
+	// Valeurs automatiques correspondant à l'ordre/département actuellement choisis.
+	let defautsEntete = $state<EnteteParDefaut | null>(null);
+	// Champs personnalisés pour lesquels une nouvelle valeur automatique est proposée.
+	let propositionsEntete = $state<Partial<Record<ChampEntete, string>>>({});
+	let sequenceDefauts = 0;
+	const enteteIncomplete = $derived(!brouillon.ordreEnseignement || !brouillon.departement);
 
 	let televersementEnCours = $state<TypeImageEtablissement | null>(null);
 
@@ -173,6 +190,77 @@
 	function reinitialiserBrouillonDepuis(donnees: Etablissement) {
 		brouillon = construireBrouillon(donnees);
 		brouillonEnregistre = JSON.stringify(brouillon);
+		propositionsEntete = {};
+		chargerDefautsEntete();
+	}
+
+	async function recupererDefautsEntete(
+		ordre: OrdreEnseignement | undefined,
+		departement: string | undefined
+	): Promise<EnteteParDefaut | null> {
+		if (!ordre || !departement) return null;
+		try {
+			return await session.requeteAuthentifiee((token) =>
+				etablissementApi.enteteParDefaut(token, ordre, departement)
+			);
+		} catch {
+			// Non bloquant : les champs restent éditables, sans indicateur automatique.
+			return null;
+		}
+	}
+
+	async function chargerDefautsEntete() {
+		const id = ++sequenceDefauts;
+		const defauts = await recupererDefautsEntete(
+			brouillon.ordreEnseignement,
+			brouillon.departement
+		);
+		if (id === sequenceDefauts) defautsEntete = defauts;
+	}
+
+	/**
+	 * L'ordre ou le département vient de changer : les champs restés automatiques
+	 * (vides, ou égaux à l'ancienne valeur par défaut) suivent ; un champ
+	 * personnalisé n'est jamais écrasé, on propose seulement la nouvelle valeur.
+	 */
+	async function surChangementOrigineEntete(
+		ordre: OrdreEnseignement | undefined,
+		departement: string | undefined
+	) {
+		const id = ++sequenceDefauts;
+		const anciens = defautsEntete;
+		const nouveaux = await recupererDefautsEntete(ordre, departement);
+		if (id !== sequenceDefauts) return;
+		defautsEntete = nouveaux;
+
+		const propositions: Partial<Record<ChampEntete, string>> = {};
+		for (const champ of CHAMPS_ENTETE) {
+			const cible = nouveaux?.[champ] ?? '';
+			const actuel = brouillon[champ] ?? '';
+			if (actuel === cible) continue;
+			if (!actuel.trim() || actuel === anciens?.[champ]) brouillon[champ] = cible;
+			else if (cible) propositions[champ] = cible;
+		}
+		propositionsEntete = propositions;
+	}
+
+	function etatChampEntete(champ: ChampEntete): 'auto' | 'personnalise' | 'vide' {
+		const valeur = (brouillon[champ] ?? '').trim();
+		if (!valeur) return 'vide';
+		return defautsEntete && valeur === defautsEntete[champ] ? 'auto' : 'personnalise';
+	}
+
+	function retablirChampEntete(champ: ChampEntete) {
+		const defaut = defautsEntete?.[champ];
+		if (!defaut) return;
+		brouillon[champ] = defaut;
+		garderChampEntete(champ);
+	}
+
+	function garderChampEntete(champ: ChampEntete) {
+		const reste = { ...propositionsEntete };
+		delete reste[champ];
+		propositionsEntete = reste;
 	}
 
 	/** Réinitialisation complète (chargement initial + juste après un enregistrement réussi). */
@@ -521,6 +609,50 @@
 	</div>
 {/snippet}
 
+{#snippet champEntete(champ: ChampEntete, id: string, libelle: string, requis: boolean)}
+	{@const etat = etatChampEntete(champ)}
+	{@const defaut = defautsEntete?.[champ]}
+	<div class="field full">
+		<div class="entete-label">
+			<label for={id}>{libelle}{requis ? ' *' : ''}</label>
+			{#if etat === 'auto'}
+				<span class="badge b-ok">Valeur automatique</span>
+			{:else if etat === 'personnalise'}
+				<span class="badge b-wait">Modifiée manuellement</span>
+			{/if}
+			{#if estDirecteur && defaut && etat !== 'auto'}
+				<button type="button" class="btn ghost sm" onclick={() => retablirChampEntete(champ)}>
+					Rétablir la valeur par défaut
+				</button>
+			{/if}
+		</div>
+		<input
+			{id}
+			type="text"
+			bind:value={brouillon[champ]}
+			readonly={!estDirecteur}
+			required={requis}
+		/>
+		{#if propositionsEntete[champ]}
+			<div class="proposition" role="status">
+				<p>
+					L’ordre d’enseignement ou le département a changé. Remplacer {LIBELLE_CHAMP_ENTETE[champ]}
+					par la valeur automatique ?
+				</p>
+				<p class="hint">{propositionsEntete[champ]}</p>
+				<div class="actions">
+					<button type="button" class="btn sm" onclick={() => retablirChampEntete(champ)}>
+						Remplacer
+					</button>
+					<button type="button" class="btn ghost sm" onclick={() => garderChampEntete(champ)}>
+						Garder ma valeur
+					</button>
+				</div>
+			</div>
+		{/if}
+	</div>
+{/snippet}
+
 <h1>Paramètres</h1>
 
 {#if chargement}
@@ -571,7 +703,16 @@
 					</div>
 					<div class="field">
 						<label for="f-ordre">Ordre d’enseignement</label>
-						<select id="f-ordre" bind:value={brouillon.ordreEnseignement} disabled={!estDirecteur}>
+						<select
+							id="f-ordre"
+							bind:value={brouillon.ordreEnseignement}
+							disabled={!estDirecteur}
+							onchange={(e) =>
+								surChangementOrigineEntete(
+									e.currentTarget.value as OrdreEnseignement,
+									brouillon.departement
+								)}
+						>
 							<option value="MATERNELLE">Maternelle</option>
 							<option value="PRIMAIRE">Primaire</option>
 							<option value="SECONDAIRE">Secondaire</option>
@@ -617,7 +758,10 @@
 							id="f-dept"
 							bind:value={brouillon.departement}
 							disabled={!estDirecteur}
-							onchange={() => (brouillon.commune = '')}
+							onchange={(e) => {
+								brouillon.commune = '';
+								surChangementOrigineEntete(brouillon.ordreEnseignement, e.currentTarget.value);
+							}}
 						>
 							{#each DEPARTEMENTS as dep (dep)}
 								<option value={dep}>{dep}</option>
@@ -653,34 +797,20 @@
 				<h2>En-tête des documents</h2>
 				<p class="sd">Les lignes officielles imprimées en haut de chaque document.</p>
 				<div class="fgrid">
-					<div class="field full">
-						<label for="f-ministere">Ministère de tutelle *</label>
-						<input
-							id="f-ministere"
-							type="text"
-							bind:value={brouillon.ministereTutelle}
-							readonly={!estDirecteur}
-							required
-						/>
-					</div>
-					<div class="field full">
-						<label for="f-direction">Direction départementale</label>
-						<input
-							id="f-direction"
-							type="text"
-							bind:value={brouillon.directionDepartementale}
-							readonly={!estDirecteur}
-						/>
-					</div>
-					<div class="field full">
-						<label for="f-devise">Devise</label>
-						<input
-							id="f-devise"
-							type="text"
-							bind:value={brouillon.devise}
-							readonly={!estDirecteur}
-						/>
-					</div>
+					{#if enteteIncomplete}
+						<p class="hint full">
+							Complétez l’ordre d’enseignement et le département dans l’onglet « Établissement »
+							pour remplir ces champs automatiquement.
+						</p>
+					{/if}
+					{@render champEntete('ministereTutelle', 'f-ministere', 'Ministère de tutelle', true)}
+					{@render champEntete(
+						'directionDepartementale',
+						'f-direction',
+						'Direction départementale',
+						false
+					)}
+					{@render champEntete('devise', 'f-devise', 'Devise', false)}
 				</div>
 			</section>
 			<section class="panel">
@@ -1095,6 +1225,26 @@
 {/if}
 
 <style>
+	.entete-label {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--s2);
+	}
+	.proposition {
+		margin-top: var(--s2);
+		padding: 10px 14px;
+		border-radius: var(--r-sm);
+		background: var(--sunken);
+		font-size: 14px;
+	}
+	.proposition p {
+		margin: 0 0 var(--s2);
+	}
+	.proposition .actions {
+		display: flex;
+		gap: var(--s2);
+	}
 	h1 {
 		font: 400 34px/1.15 var(--font-serif);
 		letter-spacing: -0.015em;
