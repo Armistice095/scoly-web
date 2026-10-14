@@ -737,22 +737,6 @@
 						/>
 					</div>
 					<div class="field">
-						<label for="f-commune">Commune *</label>
-						<select
-							id="f-commune"
-							bind:value={brouillon.commune}
-							disabled={!estDirecteur || !brouillon.departement}
-							required
-						>
-							<option value="">
-								{brouillon.departement ? 'Choisir' : "Choisir d'abord un département"}
-							</option>
-							{#each communesDisponibles as c (c)}
-								<option value={c}>{c}</option>
-							{/each}
-						</select>
-					</div>
-					<div class="field">
 						<label for="f-dept">Département</label>
 						<select
 							id="f-dept"
@@ -765,6 +749,22 @@
 						>
 							{#each DEPARTEMENTS as dep (dep)}
 								<option value={dep}>{dep}</option>
+							{/each}
+						</select>
+					</div>
+					<div class="field">
+						<label for="f-commune">Commune *</label>
+						<select
+							id="f-commune"
+							bind:value={brouillon.commune}
+							disabled={!estDirecteur || !brouillon.departement}
+							required
+						>
+							<option value="">
+								{brouillon.departement ? 'Choisir' : "Choisir d'abord un département"}
+							</option>
+							{#each communesDisponibles as c (c)}
+								<option value={c}>{c}</option>
 							{/each}
 						</select>
 					</div>
